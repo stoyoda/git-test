@@ -1,0 +1,5 @@
+namespace :apache do
+  task :stop, :roles => "172.16.48.53" do
+      sudo "/etc/init.d/httpd stop;"
+   end
+end
