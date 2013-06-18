@@ -1,0 +1,70 @@
+#############################################################################
+## Settins:
+load 'config.rb'
+
+
+#############################################################################
+## TASKS.
+
+namespace :yum do
+
+# EPEL レポジトリのインストール
+desc "Setup CentOS epel Repository ( x86_64 )"
+task :setup_epel do
+
+# パッケージがインストールされていない場合はインストール
+if package_not_install?("epel-release")
+   run <<-CMD
+     sudo rpm -Uv http://ftp-srv2.kddilabs.jp/Linux/distributions/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+   CMD
+end
+end
+
+
+# RPMForge レポジトリのインストール
+desc "Setup CentOS rpmforge Repository ( x86_64 )"
+task :setup_rpmforge do
+
+# パッケージがインストールされていない場合はインストール
+if package_not_install?("rpmforge-release")
+run <<-CMD
+sudo rpm -Uv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
+CMD
+end
+end
+
+# Remi レポジトリのインストール
+desc "Setup CentOS Remi Repository ( x86_64 )"
+task :setup_remi do
+
+# パッケージがインストールされていない場合はインストール
+if package_not_install?("remi-release")
+run <<-CMD
+sudo rpm -Uv http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+CMD
+end
+end
+
+
+# treasure-data.com レポジトリのインストール
+desc "Setup treasuredata Repository"
+task :setup_treasuredata do
+        put unindent(<<-REPO), '/tmp/td.repo'
+[treasuredata]
+name=TreasureData
+baseurl=http://packages.treasure-data.com/redhat/$basearch
+gpgcheck=0
+        REPO
+run 'sudo mv /tmp/td.repo /etc/yum.repos.d/'
+end
+
+
+# yum update の実行
+desc "default: execute yum update"
+task :yum_update do
+  run <<-CMD
+    sudo yum update -q -y
+  CMD
+end
+
+end #End of namespace :yum
